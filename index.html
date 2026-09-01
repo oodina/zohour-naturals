@@ -436,7 +436,13 @@
   .order-summary-list{ display:flex; flex-direction:column; gap:8px; margin-bottom:18px; }
   .order-summary-row{ display:flex; justify-content:space-between; font-size:13.5px; padding:8px 12px; background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-sm); }
   .order-summary-row span:last-child{ color:var(--ink-soft); font-variant-numeric:tabular-nums; }
+  .order-summary-total{ background:var(--surface-2); border-color:var(--primary); font-weight:700; }
+  .order-summary-total span{ color:var(--ink) !important; }
+  .order-summary-total span:last-child{ color:var(--primary) !important; font-family:var(--font-display); }
   .form-field{ margin-bottom:16px; }
+  .form-row-3{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+  .form-row-3 .form-field{ margin-bottom:16px; }
+  @media (max-width:420px){ .form-row-3{ grid-template-columns:1fr; gap:0; } }
   .form-field label{ display:block; font-size:13px; font-weight:600; margin-bottom:6px; }
   .form-field input, .form-field textarea{
     width:100%; padding:12px 14px; border-radius:var(--radius-sm); border:1px solid var(--line); background:var(--surface);
@@ -797,7 +803,25 @@
         </div>
         <div class="form-field">
           <label data-i18n="orderCity"></label>
-          <input type="text" id="orderCityInput" autocomplete="street-address">
+          <input type="text" id="orderCityInput" autocomplete="address-level2">
+        </div>
+        <div class="form-field">
+          <label data-i18n="orderDistrict"></label>
+          <input type="text" id="orderDistrictInput" autocomplete="address-level3">
+        </div>
+        <div class="form-row-3">
+          <div class="form-field">
+            <label data-i18n="orderBuilding"></label>
+            <input type="text" id="orderBuildingInput">
+          </div>
+          <div class="form-field">
+            <label data-i18n="orderFloor"></label>
+            <input type="text" id="orderFloorInput">
+          </div>
+          <div class="form-field">
+            <label data-i18n="orderApartment"></label>
+            <input type="text" id="orderApartmentInput">
+          </div>
         </div>
         <div class="form-field">
           <label data-i18n="orderNoteLabel"></label>
@@ -838,11 +862,12 @@
      channel. Email is an optional extra — leave it as "" and its
      button/contact-card just stays hidden.
      ===================================================== */
-  var SHOP_WHATSAPP  = "201000000000"; // REQUIRED — TODO: replace with the real WhatsApp number, digits only, country code first (e.g. 20 for Egypt), no + or spaces
+  var SHOP_WHATSAPP  = "201503502934"; // real number is set
   var SHOP_EMAIL     = "";             // optional — put a real email here to also show an "email" button, or leave "" to hide it
   var SHOP_CITY     = { en:"Egypt — nationwide delivery", ar:"مصر — توصيل لجميع المدن", ru:"Египет — доставка по всей стране" };
   var SHOP_HOURS    = { en:"Sat–Thu, 10:00–19:00", ar:"السبت–الخميس، 10:00–19:00", ru:"Сб–Чт, 10:00–19:00" };
   var CURRENCY = "EGP";
+  var DELIVERY_FEE = 70; // flat delivery fee (EGP), added automatically to every order
 
   /* =====================================================
      CATEGORIES
@@ -1085,7 +1110,9 @@
       orderEyebrow:"Almost done", orderTitle:"Complete your order",
       orderIntro:"Fill in your details — we'll turn this into a ready-to-send message.",
       orderSummaryLabel:"Your order", orderName:"Full name", orderPhone:"Phone / WhatsApp number", orderPhoneHint:"Include the country code if you're outside Egypt.",
-      orderCity:"City & address", orderNoteLabel:"Note (optional)", orderErrorRequired:"Please fill in your name and phone number.",
+      orderCity:"City", orderDistrict:"District / area", orderBuilding:"Building no.", orderFloor:"Floor", orderApartment:"Apartment no.",
+      orderDelivery:"Delivery (Egypt)", orderTotal:"Total",
+      orderNoteLabel:"Note (optional)", orderErrorRequired:"Please fill in your name, phone, city and district — we need these to deliver your order.",
       orderPrepareBtn:"Prepare message", orderMessageLabel:"Your order message",
       orderSendWhatsapp:"Send on WhatsApp", orderSendEmail:"Send by email", orderCopyBtn:"Copy text",
       orderCopyNoteOk:"Copied!", orderCopyNoteFail:"Select the text above and copy it manually.",
@@ -1129,7 +1156,9 @@
       orderEyebrow:"على وشك الانتهاء", orderTitle:"أكملي طلبك",
       orderIntro:"املئي بياناتك — سنحولها إلى رسالة جاهزة للإرسال.",
       orderSummaryLabel:"طلبك", orderName:"الاسم الكامل", orderPhone:"رقم الهاتف / واتساب", orderPhoneHint:"أضيفي رمز الدولة إذا كنت خارج مصر.",
-      orderCity:"المدينة والعنوان", orderNoteLabel:"ملاحظة (اختياري)", orderErrorRequired:"يُرجى إدخال الاسم ورقم الهاتف.",
+      orderCity:"المدينة", orderDistrict:"الحي / المنطقة", orderBuilding:"رقم المبنى", orderFloor:"الطابق", orderApartment:"رقم الشقة",
+      orderDelivery:"التوصيل (مصر)", orderTotal:"الإجمالي",
+      orderNoteLabel:"ملاحظة (اختياري)", orderErrorRequired:"يُرجى إدخال الاسم والهاتف والمدينة والحي — نحتاجها لتوصيل طلبك.",
       orderPrepareBtn:"تجهيز الرسالة", orderMessageLabel:"رسالة طلبك",
       orderSendWhatsapp:"إرسال عبر واتساب", orderSendEmail:"إرسال بالبريد الإلكتروني", orderCopyBtn:"نسخ النص",
       orderCopyNoteOk:"تم النسخ!", orderCopyNoteFail:"حددي النص أعلاه وانسخيه يدويًا.",
@@ -1173,7 +1202,9 @@
       orderEyebrow:"Почти готово", orderTitle:"Завершите заказ",
       orderIntro:"Заполните данные — мы соберём из этого готовое сообщение для отправки.",
       orderSummaryLabel:"Ваш заказ", orderName:"Имя", orderPhone:"Телефон / WhatsApp", orderPhoneHint:"Укажите код страны, если вы не в Египте.",
-      orderCity:"Город и адрес", orderNoteLabel:"Комментарий (необязательно)", orderErrorRequired:"Пожалуйста, укажите имя и номер телефона.",
+      orderCity:"Город", orderDistrict:"Район", orderBuilding:"№ дома", orderFloor:"Этаж", orderApartment:"№ квартиры",
+      orderDelivery:"Доставка (Египет)", orderTotal:"Итого",
+      orderNoteLabel:"Комментарий (необязательно)", orderErrorRequired:"Пожалуйста, укажите имя, телефон, город и район — это нужно для доставки.",
       orderPrepareBtn:"Подготовить сообщение", orderMessageLabel:"Текст вашего заказа",
       orderSendWhatsapp:"Отправить в WhatsApp", orderSendEmail:"Отправить на email", orderCopyBtn:"Скопировать текст",
       orderCopyNoteOk:"Скопировано!", orderCopyNoteFail:"Выделите текст выше и скопируйте вручную.",
@@ -1239,6 +1270,22 @@
   }
   function discountBadgeHtml(p){
     return p.discount > 0 ? '<span class="discount-badge"><svg><use href="#i-tag"/></svg>-'+p.discount+'%</span>' : "";
+  }
+  // true once every item in the cart has a real price — until then we
+  // never show a grand total, only the parts we actually know (delivery).
+  function cartFullyPriced(){
+    return Object.keys(state.cart).every(function(id){
+      var p = productById(id);
+      return p && p.price > 0;
+    });
+  }
+  function cartSubtotal(){
+    var total = 0;
+    Object.keys(state.cart).forEach(function(id){
+      var p = productById(id);
+      if(p && p.price > 0) total += discountedPrice(p) * state.cart[id];
+    });
+    return total;
   }
 
   /* =====================================================
@@ -1629,10 +1676,17 @@
     document.getElementById("orderFormStep").hidden = false;
     document.getElementById("orderSendStep").hidden = true;
     document.getElementById("orderErrorHint").hidden = true;
-    document.getElementById("orderSummaryList").innerHTML = ids.map(function(id){
+    var rows = ids.map(function(id){
       var p = productById(id);
       return '<div class="order-summary-row"><span>'+tt(p.name)+'</span><span>× '+state.cart[id]+'</span></div>';
-    }).join("");
+    });
+    rows.push('<div class="order-summary-row"><span>'+t("orderDelivery")+'</span><span>'+DELIVERY_FEE+' '+CURRENCY+'</span></div>');
+    if(cartFullyPriced()){
+      rows.push('<div class="order-summary-row order-summary-total"><span>'+t("orderTotal")+'</span><span>'+(cartSubtotal()+DELIVERY_FEE)+' '+CURRENCY+'</span></div>');
+    } else {
+      rows.push('<div class="order-summary-row order-summary-total"><span>'+t("orderTotal")+'</span><span>'+t("priceNote")+'</span></div>');
+    }
+    document.getElementById("orderSummaryList").innerHTML = rows.join("");
     closeCart();
     document.getElementById("orderModalWrap").classList.add("open");
     document.body.style.overflow = "hidden";
@@ -1642,7 +1696,7 @@
     document.body.style.overflow = "";
   }
 
-  function buildOrderMessage(name, phone, city, note){
+  function buildOrderMessage(name, phone, address, note){
     var lines = [];
     lines.push("Zohour Naturals — " + t("orderMsgNewOrder"));
     lines.push("");
@@ -1651,9 +1705,21 @@
       lines.push("• " + tt(p.name) + "  × " + state.cart[id]);
     });
     lines.push("");
+    lines.push(t("orderDelivery") + ": " + DELIVERY_FEE + " " + CURRENCY);
+    if(cartFullyPriced()){
+      lines.push(t("orderTotal") + ": " + (cartSubtotal() + DELIVERY_FEE) + " " + CURRENCY);
+    }
+    lines.push("");
     lines.push(t("orderMsgName") + ": " + name);
     lines.push(t("orderMsgPhone") + ": " + phone);
-    if(city) lines.push(t("orderMsgAddress") + ": " + city);
+    if(address.city) lines.push(t("orderCity") + ": " + address.city);
+    if(address.district) lines.push(t("orderDistrict") + ": " + address.district);
+    var flat = [
+      address.building ? (t("orderBuilding") + " " + address.building) : "",
+      address.floor ? (t("orderFloor") + " " + address.floor) : "",
+      address.apartment ? (t("orderApartment") + " " + address.apartment) : ""
+    ].filter(function(x){ return x; }).join(", ");
+    if(flat) lines.push(flat);
     if(note) lines.push(t("orderMsgNote") + ": " + note);
     return lines.join("\n");
   }
@@ -1662,15 +1728,19 @@
     var name = document.getElementById("orderNameInput").value.trim();
     var phone = document.getElementById("orderPhoneInput").value.trim();
     var city = document.getElementById("orderCityInput").value.trim();
+    var district = document.getElementById("orderDistrictInput").value.trim();
+    var building = document.getElementById("orderBuildingInput").value.trim();
+    var floor = document.getElementById("orderFloorInput").value.trim();
+    var apartment = document.getElementById("orderApartmentInput").value.trim();
     var note = document.getElementById("orderNoteInput").value.trim();
     var errEl = document.getElementById("orderErrorHint");
-    if(!name || !phone){
+    if(!name || !phone || !city || !district){
       errEl.textContent = t("orderErrorRequired");
       errEl.hidden = false;
       return;
     }
     errEl.hidden = true;
-    var msg = buildOrderMessage(name, phone, city, note);
+    var msg = buildOrderMessage(name, phone, { city:city, district:district, building:building, floor:floor, apartment:apartment }, note);
     document.getElementById("orderMessageText").value = msg;
     var waLink = "https://wa.me/" + SHOP_WHATSAPP + "?text=" + encodeURIComponent(msg);
     document.getElementById("orderWhatsappLink").href = waLink;

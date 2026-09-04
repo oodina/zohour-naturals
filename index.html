@@ -468,6 +468,25 @@
   .send-row .btn{ flex:1; }
   .copy-note{ font-size:12px; color:var(--ink-soft); margin-top:8px; min-height:16px; }
 
+  /* ---------- Large screens / TV ---------- */
+  @media (min-width:1440px){
+    .container{ max-width:1440px; }
+    .hero{ padding-block:88px 76px; }
+    .hero h1{ font-size:76px; }
+    .hero-lead{ font-size:19px; max-width:52ch; }
+    .section-head h2{ font-size:46px; }
+    .section-head p{ font-size:17px; }
+    .product-grid{ grid-template-columns:repeat(auto-fill,minmax(270px,1fr)); gap:26px; }
+    .card-body h4{ font-size:18px; }
+    .hero-chip{ width:88px; height:88px; }
+    .hero-stat b{ font-size:46px; }
+  }
+  @media (min-width:1920px){
+    .container{ max-width:1600px; }
+    .hero h1{ font-size:92px; }
+    .section-head h2{ font-size:54px; }
+  }
+
   [hidden]{ display:none !important; }
 
   @media (prefers-reduced-motion: reduce){

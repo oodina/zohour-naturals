@@ -190,23 +190,30 @@
   .mobile-nav a{ text-decoration:none; color:var(--ink); font-weight:600; padding:12px 4px; border-bottom:1px solid var(--line); font-size:15px; }
 
   /* ---------- Hero ---------- */
-  .hero{ position:relative; padding-block:64px 56px; overflow:hidden; text-align:center; }
-  .hero-inner{ position:relative; z-index:2; max-width:640px; margin-inline:auto; display:flex; flex-direction:column; align-items:center; }
-  .hero h1{ font-size:clamp(34px,5.6vw,64px); font-weight:200; letter-spacing:-0.035em; line-height:1.03; margin-block:14px 16px; }
+  .hero{ position:relative; padding-block:56px; overflow:hidden; text-align:center; }
+  .hero-grid{
+    position:relative; z-index:2; display:grid; grid-template-columns:1fr 1fr; gap:28px; align-items:stretch;
+  }
+  @media (max-width:699px){ .hero-grid{ grid-template-columns:1fr; } }
+  .hero-media{
+    position:relative; aspect-ratio:1/1; border-radius:var(--radius-lg); overflow:hidden;
+    border:1.5px solid var(--accent-apricot); background:var(--surface-2);
+  }
+  .hero-media-caption{
+    position:absolute; bottom:14px; inset-inline-start:14px; z-index:2; background:rgba(17,17,17,.72); color:#ffffff;
+    font-size:12.5px; font-weight:600; padding:6px 13px; border-radius:999px;
+  }
+  .hero-content{
+    display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding-block:24px;
+  }
+  .hero h1{ font-size:clamp(30px,3.6vw,52px); font-weight:200; letter-spacing:-0.035em; line-height:1.05; margin-block:14px 16px; }
   html[lang="ar"] .hero h1{ font-weight:600; letter-spacing:0; }
-  .hero-lead{ font-size:17px; color:var(--ink-soft); max-width:46ch; margin:0 auto 28px; }
+  .hero-lead{ font-size:16.5px; color:var(--ink-soft); max-width:42ch; margin:0 auto 28px; }
   .hero-actions{ display:flex; gap:14px; flex-wrap:wrap; justify-content:center; }
-  .hero-stats{ display:flex; gap:30px; margin-top:38px; flex-wrap:wrap; justify-content:center; }
+  .hero-stats{ position:relative; z-index:2; display:flex; gap:30px; margin-top:44px; flex-wrap:wrap; justify-content:center; }
   .hero-stat b{ display:block; font-family:var(--font-display); font-weight:200; font-size:38px; letter-spacing:-0.03em; color:var(--ink-heading); }
   html[lang="ar"] .hero-stat b{ font-weight:600; letter-spacing:0; }
   .hero-stat span{ font-size:12px; color:var(--ink-soft); letter-spacing:.04em; }
-  .hero-strip{ display:flex; gap:14px; justify-content:center; margin-top:44px; flex-wrap:wrap; position:relative; z-index:2; }
-  .hero-chip{
-    width:74px; height:74px; border-radius:50%; overflow:hidden; position:relative; flex:0 0 auto;
-    border:3px solid var(--surface); box-shadow:var(--shadow-sm); display:flex; align-items:center; justify-content:center;
-  }
-  .hero-chip svg{ width:42%; height:42%; }
-  @media (max-width:560px){ .hero-chip{ width:58px; height:58px; } }
 
   /* ---------- Steam / mist ---------- */
   .steam-veil{
@@ -281,7 +288,16 @@
     background-position:0 0, 0 0, 0 0;
   }
   .swatch svg{ width:34%; height:34%; color:var(--accent); position:relative; }
-  .swatch img, .modal-hero img, .hero-chip img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  .swatch img, .modal-hero img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  .hero-media img{
+    position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+    animation:heroKenBurns 16s ease-in-out infinite alternate;
+  }
+  @keyframes heroKenBurns{
+    0%{ transform:scale(1) translate(0,0); }
+    100%{ transform:scale(1.14) translate(-2.5%,-2%); }
+  }
+  @media (prefers-reduced-motion: reduce){ .hero-media img{ animation:none; } }
   .badge{
     position:absolute; top:12px; inset-inline-start:12px; z-index:2; font-size:11px; font-weight:700; letter-spacing:.03em;
     padding:5px 11px; border-radius:999px; background:var(--surface); border:1px solid var(--line); color:var(--ink-soft);
@@ -471,19 +487,19 @@
   /* ---------- Large screens / TV ---------- */
   @media (min-width:1440px){
     .container{ max-width:1440px; }
-    .hero{ padding-block:88px 76px; }
-    .hero h1{ font-size:76px; }
-    .hero-lead{ font-size:19px; max-width:52ch; }
+    .hero{ padding-block:76px; }
+    .hero-grid{ gap:40px; }
+    .hero h1{ font-size:58px; }
+    .hero-lead{ font-size:18px; max-width:44ch; }
     .section-head h2{ font-size:46px; }
     .section-head p{ font-size:17px; }
     .product-grid{ grid-template-columns:repeat(auto-fill,minmax(270px,1fr)); gap:26px; }
     .card-body h4{ font-size:18px; }
-    .hero-chip{ width:88px; height:88px; }
     .hero-stat b{ font-size:46px; }
   }
   @media (min-width:1920px){
     .container{ max-width:1600px; }
-    .hero h1{ font-size:92px; }
+    .hero h1{ font-size:66px; }
     .section-head h2{ font-size:54px; }
   }
 
@@ -628,18 +644,23 @@
     <div class="wisp w1"></div>
     <div class="wisp w2"></div>
     <div class="wisp w3"></div>
-    <div class="container hero-inner">
-      <div class="wordmark wordmark-lg">
-        <svg class="wordmark-leaf"><use href="#i-leaf"/></svg>
-        <span class="wordmark-main">Zohour</span>
-        <span class="wordmark-sub"><i></i>Naturals<i></i></span>
-      </div>
-      <span class="eyebrow" data-i18n="heroEyebrow"></span>
-      <h1 data-i18n="heroTitle"></h1>
-      <p class="hero-lead" data-i18n="heroText"></p>
-      <div class="hero-actions">
-        <a href="#catalog" class="btn btn-primary" data-i18n="heroCta"></a>
-        <a href="#tips" class="btn btn-ghost" data-i18n="heroCta2"></a>
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-media" id="heroMedia"></div>
+        <div class="hero-content">
+          <div class="wordmark wordmark-lg">
+            <svg class="wordmark-leaf"><use href="#i-leaf"/></svg>
+            <span class="wordmark-main">Zohour</span>
+            <span class="wordmark-sub"><i></i>Naturals<i></i></span>
+          </div>
+          <span class="eyebrow" data-i18n="heroEyebrow"></span>
+          <h1 data-i18n="heroTitle"></h1>
+          <p class="hero-lead" data-i18n="heroText"></p>
+          <div class="hero-actions">
+            <a href="#catalog" class="btn btn-primary" data-i18n="heroCta"></a>
+            <a href="#tips" class="btn btn-ghost" data-i18n="heroCta2"></a>
+          </div>
+        </div>
       </div>
       <div class="hero-stats">
         <div class="hero-stat"><b>100%</b><span data-i18n="statNatural"></span></div>
@@ -647,7 +668,6 @@
         <div class="hero-stat"><b>🇲🇦</b><span data-i18n="statOrigin"></span></div>
       </div>
     </div>
-    <div class="hero-strip" id="heroSwatches"></div>
     <div class="steam-veil" aria-hidden="true"></div>
   </section>
 
@@ -1337,20 +1357,15 @@
   }
 
   /* =====================================================
-     RENDER: hero mini swatches
+     RENDER: hero media square
      ===================================================== */
-  function renderHeroSwatches(){
-    var feature = ["black-soap","kessa-glove","ghassoul-clay","hammam-box"];
-    var html = "";
-    feature.forEach(function(id){
-      var p = productById(id);
-      if(!p) return;
-      var inner = photoSlotHtml(p) || '<svg><use href="#'+p.icon+'"/></svg>';
-      html += '<div class="hero-chip" title="'+tt(p.name)+'" style="--accent:var(--accent-'+p.accent+');--accent-soft:var(--accent-'+p.accent+'-soft);background:linear-gradient(135deg,var(--accent-soft),var(--surface-2));">'+
-        inner+'</div>';
-    });
-    var wrap = document.getElementById("heroSwatches");
-    wrap.innerHTML = html;
+  function renderHeroMedia(){
+    var p = productById("hammam-box");
+    if(!p) return;
+    var wrap = document.getElementById("heroMedia");
+    if(!wrap) return;
+    var inner = photoSlotHtml(p) || '<svg><use href="#'+p.icon+'"/></svg>';
+    wrap.innerHTML = inner + '<span class="hero-media-caption">'+tt(p.name)+'</span>';
     hydratePhotos(wrap);
     hydrateIcons(wrap);
   }
@@ -1834,7 +1849,7 @@
      ===================================================== */
   function renderAll(){
     applyLanguage();
-    renderHeroSwatches();
+    renderHeroMedia();
     renderCatNav();
     renderCatalog();
     renderDiscounts();

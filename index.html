@@ -215,34 +215,6 @@
   html[lang="ar"] .hero-stat b{ font-weight:600; letter-spacing:0; }
   .hero-stat span{ font-size:12px; color:var(--ink-soft); letter-spacing:.04em; }
 
-  /* ---------- Steam / mist ---------- */
-  .steam-veil{
-    position:absolute; inset:0; z-index:4; pointer-events:none;
-    background:radial-gradient(ellipse 70% 60% at 50% 38%, var(--surface) 0%, var(--bg) 55%, transparent 100%);
-    animation:steamClear 2.4s cubic-bezier(.4,0,.2,1) forwards;
-  }
-  @keyframes steamClear{
-    0%{ opacity:1; }
-    55%{ opacity:.85; }
-    100%{ opacity:0; }
-  }
-  .wisp{
-    position:absolute; bottom:-60px; border-radius:50%;
-    background:radial-gradient(circle, rgba(255,255,255,.55) 0%, rgba(255,255,255,0) 72%);
-    filter:blur(16px); opacity:0; z-index:1; pointer-events:none;
-    animation:wispDrift 9s ease-in-out infinite;
-  }
-  .wisp.w1{ width:160px; height:200px; left:18%; animation-delay:.3s; }
-  .wisp.w2{ width:130px; height:180px; left:47%; animation-delay:2.6s; }
-  .wisp.w3{ width:180px; height:220px; left:72%; animation-delay:5s; }
-  @keyframes wispDrift{
-    0%{ transform:translateY(0) translateX(0) scale(1); opacity:0; }
-    18%{ opacity:.5; }
-    55%{ transform:translateY(-160px) translateX(12px) scale(1.2); opacity:.28; }
-    100%{ transform:translateY(-300px) translateX(-10px) scale(1.35); opacity:0; }
-  }
-  @media (prefers-reduced-motion: reduce){ .steam-veil{ display:none; } .wisp{ display:none; } }
-
   /* ---------- Category chips ---------- */
   .cat-nav{ display:flex; gap:10px; overflow-x:auto; padding:22px 0 6px; scrollbar-width:none; }
   .cat-nav::-webkit-scrollbar{ display:none; }
@@ -641,9 +613,6 @@
 <main>
   <!-- ============ HERO ============ -->
   <section class="hero">
-    <div class="wisp w1"></div>
-    <div class="wisp w2"></div>
-    <div class="wisp w3"></div>
     <div class="container">
       <div class="hero-grid">
         <div class="hero-media" id="heroMedia"></div>
@@ -668,7 +637,6 @@
         <div class="hero-stat"><b>🇲🇦</b><span data-i18n="statOrigin"></span></div>
       </div>
     </div>
-    <div class="steam-veil" aria-hidden="true"></div>
   </section>
 
   <div class="divider"><span class="divider-mark"></span></div>

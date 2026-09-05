@@ -191,21 +191,7 @@
 
   /* ---------- Hero ---------- */
   .hero{ position:relative; padding-block:56px; overflow:hidden; text-align:center; }
-  .hero-grid{
-    position:relative; z-index:2; display:grid; grid-template-columns:1fr 1fr; gap:28px; align-items:stretch;
-  }
-  @media (max-width:699px){ .hero-grid{ grid-template-columns:1fr; } }
-  .hero-media{
-    position:relative; aspect-ratio:1/1; border-radius:var(--radius-lg); overflow:hidden;
-    border:1.5px solid var(--accent-apricot); background:var(--surface-2);
-  }
-  .hero-media-caption{
-    position:absolute; bottom:14px; inset-inline-start:14px; z-index:2; background:rgba(17,17,17,.72); color:#ffffff;
-    font-size:12.5px; font-weight:600; padding:6px 13px; border-radius:999px;
-  }
-  .hero-content{
-    display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding-block:24px;
-  }
+  .hero-top{ position:relative; z-index:2; display:flex; flex-direction:column; align-items:center; max-width:640px; margin-inline:auto; }
   .hero h1{ font-size:clamp(30px,3.6vw,52px); font-weight:200; letter-spacing:-0.035em; line-height:1.05; margin-block:14px 16px; }
   html[lang="ar"] .hero h1{ font-weight:600; letter-spacing:0; }
   .hero-lead{ font-size:16.5px; color:var(--ink-soft); max-width:42ch; margin:0 auto 28px; }
@@ -261,15 +247,37 @@
   }
   .swatch svg{ width:34%; height:34%; color:var(--accent); position:relative; }
   .swatch img, .modal-hero img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
-  .hero-media img{
-    position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
-    animation:heroKenBurns 16s ease-in-out infinite alternate;
+  /* ---------- Hero "planets" banner ---------- */
+  .planet-banner{ margin-top:52px; }
+  .planet-caption{ min-height:86px; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; margin-bottom:26px; }
+  .planet-title{
+    font-family:var(--font-display); font-weight:200; font-size:clamp(28px,4.5vw,52px); letter-spacing:-0.055em;
+    color:var(--ink-heading); line-height:1.1; animation:planetCaptionIn .5s ease both;
   }
-  @keyframes heroKenBurns{
-    0%{ transform:scale(1) translate(0,0); }
-    100%{ transform:scale(1.14) translate(-2.5%,-2%); }
+  html[lang="ar"] .planet-title{ font-weight:600; letter-spacing:0; }
+  .planet-tag{
+    display:block; font-size:13px; font-weight:400; color:var(--ink-soft); letter-spacing:.24em; text-transform:uppercase;
+    margin-top:8px; animation:planetCaptionIn .5s ease both;
   }
-  @media (prefers-reduced-motion: reduce){ .hero-media img{ animation:none; } }
+  html[lang="ar"] .planet-tag{ letter-spacing:0; text-transform:none; }
+  @keyframes planetCaptionIn{
+    0%{ opacity:0; transform:translateY(10px); }
+    100%{ opacity:1; transform:translateY(0); }
+  }
+  .planet-row{ display:flex; align-items:center; justify-content:center; gap:clamp(10px,3vw,28px); }
+  .planet{
+    position:relative; flex:0 0 auto; border-radius:50%; overflow:hidden; background:var(--surface-2);
+    border:1.5px solid var(--accent-apricot);
+    width:clamp(110px,17vw,190px); height:clamp(110px,17vw,190px); opacity:.7;
+    transition:width .6s cubic-bezier(.34,1.02,.64,1), height .6s cubic-bezier(.34,1.02,.64,1),
+      opacity .6s cubic-bezier(.34,1.02,.64,1), border-color .6s ease;
+  }
+  .planet img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transition:transform .6s cubic-bezier(.34,1.02,.64,1); }
+  .planet svg{ position:absolute; inset:0; margin:auto; width:32%; height:32%; color:var(--ink-soft); }
+  .planet[data-dist="0"]{ width:clamp(180px,28vw,300px); height:clamp(180px,28vw,300px); opacity:1; border-color:var(--primary); }
+  .planet[data-dist="0"] img{ transform:scale(1.05); }
+  .planet[data-dist="far"]{ width:clamp(68px,10vw,115px); height:clamp(68px,10vw,115px); opacity:.4; }
+  @media (max-width:560px){ .planet-row{ gap:10px; } }
   .badge{
     position:absolute; top:12px; inset-inline-start:12px; z-index:2; font-size:11px; font-weight:700; letter-spacing:.03em;
     padding:5px 11px; border-radius:999px; background:var(--surface); border:1px solid var(--line); color:var(--ink-soft);
@@ -460,7 +468,6 @@
   @media (min-width:1440px){
     .container{ max-width:1440px; }
     .hero{ padding-block:76px; }
-    .hero-grid{ gap:40px; }
     .hero h1{ font-size:58px; }
     .hero-lead{ font-size:18px; max-width:44ch; }
     .section-head h2{ font-size:46px; }
@@ -614,22 +621,26 @@
   <!-- ============ HERO ============ -->
   <section class="hero">
     <div class="container">
-      <div class="hero-grid">
-        <div class="hero-media" id="heroMedia"></div>
-        <div class="hero-content">
-          <div class="wordmark wordmark-lg">
-            <svg class="wordmark-leaf"><use href="#i-leaf"/></svg>
-            <span class="wordmark-main">Zohour</span>
-            <span class="wordmark-sub"><i></i>Naturals<i></i></span>
-          </div>
-          <span class="eyebrow" data-i18n="heroEyebrow"></span>
-          <h1 data-i18n="heroTitle"></h1>
-          <p class="hero-lead" data-i18n="heroText"></p>
-          <div class="hero-actions">
-            <a href="#catalog" class="btn btn-primary" data-i18n="heroCta"></a>
-            <a href="#tips" class="btn btn-ghost" data-i18n="heroCta2"></a>
-          </div>
+      <div class="hero-top">
+        <div class="wordmark wordmark-lg">
+          <svg class="wordmark-leaf"><use href="#i-leaf"/></svg>
+          <span class="wordmark-main">Zohour</span>
+          <span class="wordmark-sub"><i></i>Naturals<i></i></span>
         </div>
+        <span class="eyebrow" data-i18n="heroEyebrow"></span>
+        <h1 data-i18n="heroTitle"></h1>
+        <p class="hero-lead" data-i18n="heroText"></p>
+        <div class="hero-actions">
+          <a href="#catalog" class="btn btn-primary" data-i18n="heroCta"></a>
+          <a href="#tips" class="btn btn-ghost" data-i18n="heroCta2"></a>
+        </div>
+      </div>
+      <div class="planet-banner">
+        <div class="planet-caption">
+          <h2 class="planet-title" id="planetTitle"></h2>
+          <span class="planet-tag" id="planetTag"></span>
+        </div>
+        <div class="planet-row" id="planetRow"></div>
       </div>
       <div class="hero-stats">
         <div class="hero-stat"><b>100%</b><span data-i18n="statNatural"></span></div>
@@ -1325,17 +1336,61 @@
   }
 
   /* =====================================================
-     RENDER: hero media square
+     RENDER: hero "planets" banner — rotating featured products
      ===================================================== */
-  function renderHeroMedia(){
-    var p = productById("hammam-box");
-    if(!p) return;
-    var wrap = document.getElementById("heroMedia");
+  // Placeholder line-up using products we already have real photos for.
+  // Swap these ids for the actual three she wants featured (Mango Body
+  // Butter / Kayan Musk Wash / Sudanese Dalka) once those photos are in.
+  var PLANET_PRODUCTS = ["hammam-box", "black-soap", "kessa-glove"];
+  var planetActive = 0;
+  var planetEls = [];
+  var planetTimer = null;
+
+  function initPlanetBanner(){
+    var wrap = document.getElementById("planetRow");
     if(!wrap) return;
-    var inner = photoSlotHtml(p) || '<svg><use href="#'+p.icon+'"/></svg>';
-    wrap.innerHTML = inner + '<span class="hero-media-caption">'+tt(p.name)+'</span>';
+    var html = "";
+    PLANET_PRODUCTS.forEach(function(id){
+      var p = productById(id);
+      if(!p) return;
+      var inner = photoSlotHtml(p) || '<svg><use href="#'+p.icon+'"/></svg>';
+      html += '<div class="planet">'+inner+'</div>';
+    });
+    wrap.innerHTML = html;
     hydratePhotos(wrap);
     hydrateIcons(wrap);
+    planetEls = Array.prototype.slice.call(wrap.querySelectorAll(".planet"));
+    applyPlanetState();
+    if(!planetTimer && planetEls.length > 1){
+      planetTimer = setInterval(function(){
+        planetActive = (planetActive + 1) % PLANET_PRODUCTS.length;
+        applyPlanetState();
+      }, 4600);
+    }
+  }
+  function applyPlanetState(){
+    if(!planetEls.length) return;
+    var n = planetEls.length;
+    var half = Math.floor(n / 2);
+    planetEls.forEach(function(el, i){
+      var raw = (((i - planetActive + half) % n) + n) % n - half;
+      var dist = Math.abs(raw);
+      el.style.order = raw;
+      el.setAttribute("data-dist", dist === 0 ? "0" : (dist >= 2 ? "far" : "1"));
+    });
+    updatePlanetCaption();
+  }
+  function updatePlanetCaption(){
+    var p = productById(PLANET_PRODUCTS[planetActive]);
+    var titleEl = document.getElementById("planetTitle");
+    var tagEl = document.getElementById("planetTag");
+    if(!p || !titleEl || !tagEl) return;
+    // restart the CSS fade-in on every rotation / language switch
+    titleEl.style.animation = "none"; tagEl.style.animation = "none";
+    void titleEl.offsetWidth;
+    titleEl.textContent = tt(p.name);
+    tagEl.textContent = tt(p.tagline);
+    titleEl.style.animation = ""; tagEl.style.animation = "";
   }
 
   /* =====================================================
@@ -1817,7 +1872,7 @@
      ===================================================== */
   function renderAll(){
     applyLanguage();
-    renderHeroMedia();
+    if(planetEls.length) updatePlanetCaption();
     renderCatNav();
     renderCatalog();
     renderDiscounts();
@@ -1882,5 +1937,6 @@
   initOpenGroups();
   initTheme();
   renderAll();
+  initPlanetBanner();
 })();
 </script>

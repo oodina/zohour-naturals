@@ -195,7 +195,7 @@
   @media (max-width:699px){ .hero-grid{ grid-template-columns:1fr; } }
   .hero-media{
     position:relative; aspect-ratio:1/1; border-radius:var(--radius-lg); overflow:hidden;
-    border:1.5px solid var(--accent-apricot); background:var(--surface-2);
+    border:1.5px solid var(--accent-apricot); background:var(--surface);
     display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px;
   }
   @media (max-width:360px){ .hero-media{ padding:10px; } .planet-row{ gap:4px; } }
@@ -275,7 +275,7 @@
   }
   .planet-row{ display:flex; align-items:center; justify-content:center; gap:clamp(6px,2vw,16px); }
   .planet{
-    position:relative; flex:0 0 auto; border-radius:50%; overflow:hidden; background:var(--surface-2);
+    position:relative; flex:0 0 auto; border-radius:50%; overflow:hidden; background:var(--surface);
     border:1.5px solid var(--accent-apricot); will-change:width,height,opacity;
     width:clamp(70px,11vw,130px); height:clamp(70px,11vw,130px); opacity:.65;
     transition:width .75s cubic-bezier(.22,1,.36,1), height .75s cubic-bezier(.22,1,.36,1),

@@ -258,21 +258,23 @@
   .swatch svg{ width:34%; height:34%; color:var(--accent); position:relative; }
   .swatch img, .modal-hero img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
   /* ---------- Hero "planets" banner ---------- */
-  .planet-caption{ min-height:56px; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; margin-bottom:18px; }
+  .planet-caption{
+    height:84px; display:flex; flex-direction:column; align-items:center; justify-content:flex-end;
+    margin-bottom:18px; overflow:hidden;
+  }
   .planet-title{
     font-family:var(--font-display); font-weight:200; font-size:clamp(19px,2.6vw,28px); letter-spacing:-0.045em;
-    color:var(--ink-heading); line-height:1.15; animation:planetCaptionIn .6s ease both; will-change:opacity,transform;
+    color:var(--ink-heading); line-height:1.15; transition:opacity .3s ease; will-change:opacity;
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
   }
   html[lang="ar"] .planet-title{ font-weight:600; letter-spacing:0; }
   .planet-tag{
     display:block; font-size:11px; font-weight:400; color:var(--ink-soft); letter-spacing:.2em; text-transform:uppercase;
-    margin-top:6px; animation:planetCaptionIn .6s ease both; will-change:opacity,transform;
+    margin-top:6px; transition:opacity .3s ease; will-change:opacity;
   }
   html[lang="ar"] .planet-tag{ letter-spacing:0; text-transform:none; }
-  @keyframes planetCaptionIn{
-    0%{ opacity:0; transform:translateY(8px); }
-    100%{ opacity:1; transform:translateY(0); }
-  }
+  .planet-caption.is-switching .planet-title,
+  .planet-caption.is-switching .planet-tag{ opacity:0; }
   .planet-row{ display:flex; align-items:center; justify-content:center; gap:clamp(6px,2vw,16px); }
   .planet{
     position:relative; flex:0 0 auto; border-radius:50%; overflow:hidden; background:var(--surface);
@@ -635,7 +637,7 @@
     <div class="container">
       <div class="hero-grid">
         <div class="hero-media">
-          <div class="planet-caption">
+          <div class="planet-caption" id="planetCaption">
             <h2 class="planet-title" id="planetTitle"></h2>
             <span class="planet-tag" id="planetTag"></span>
           </div>
@@ -1400,17 +1402,24 @@
     });
     updatePlanetCaption();
   }
+  var planetCaptionTimer = null;
   function updatePlanetCaption(){
     var item = HERO_PLANETS[planetActive];
+    var captionEl = document.getElementById("planetCaption");
     var titleEl = document.getElementById("planetTitle");
     var tagEl = document.getElementById("planetTag");
     if(!item || !titleEl || !tagEl) return;
-    // restart the CSS fade-in on every rotation / language switch
-    titleEl.style.animation = "none"; tagEl.style.animation = "none";
-    void titleEl.offsetWidth;
-    titleEl.textContent = tt(item.name);
-    tagEl.textContent = tt(item.tag);
-    titleEl.style.animation = ""; tagEl.style.animation = "";
+    if(planetCaptionTimer) clearTimeout(planetCaptionTimer);
+    // fade the old text out, swap it while invisible (so the box's fixed
+    // height absorbs any length difference instead of the row jumping),
+    // then fade the new text in — no vertical movement, no layout shift.
+    if(captionEl) captionEl.classList.add("is-switching");
+    planetCaptionTimer = setTimeout(function(){
+      titleEl.textContent = tt(item.name);
+      tagEl.textContent = tt(item.tag);
+      if(captionEl) captionEl.classList.remove("is-switching");
+      planetCaptionTimer = null;
+    }, captionEl ? 260 : 0);
   }
 
   /* =====================================================

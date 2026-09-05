@@ -1019,6 +1019,41 @@
   var SOAP_DOTS = ["#8A5A2E","#B5402E","#3E7FA0","#D45D8C"]; // brown / red / blue / pink — matches the 4-jar photo
 
   /* =====================================================
+     LIVE CATALOG — the hardcoded PRODUCTS above is the fallback that
+     paints instantly on load (works offline, never a blank page).
+     Once the database answers, we swap it in and re-render, so the
+     admin panel's edits show up here without touching this file again.
+     ===================================================== */
+  var SUPABASE_URL = "https://sdfiyxvdgihuekjljfov.supabase.co";
+  var SUPABASE_KEY = "sb_publishable_LoPzNCj9UTdreTNGpFzYDQ_C8wTZ7ZP";
+  function loadLiveCatalog(){
+    fetch(SUPABASE_URL + "/rest/v1/products?select=*&order=sort_order.asc", {
+      headers: { apikey: SUPABASE_KEY, Authorization: "Bearer " + SUPABASE_KEY }
+    }).then(function(res){
+      if(!res.ok) throw new Error("HTTP " + res.status);
+      return res.json();
+    }).then(function(rows){
+      if(!rows || !rows.length) return; // empty/unreachable table — keep the fallback
+      var mapped = rows.map(function(r){
+        return {
+          id:r.id, category:r.category, brand:r.brand, icon:r.icon || "i-jar", accent:r.accent || "gold",
+          inStock:!!r.in_stock, price:Number(r.price)||0, discount:Number(r.discount)||0, multi:!!r.multi,
+          name:{ en:r.name_en, ar:r.name_ar, ru:r.name_ru },
+          tagline:{ en:r.tagline_en, ar:r.tagline_ar, ru:r.tagline_ru },
+          desc:{ en:r.desc_en, ar:r.desc_ar, ru:r.desc_ru },
+          howTo:{ en:r.howto_en, ar:r.howto_ar, ru:r.howto_ru },
+          skin:r.skin || []
+        };
+      });
+      PRODUCTS.length = 0;
+      Array.prototype.push.apply(PRODUCTS, mapped);
+      renderAll();
+    }).catch(function(err){
+      console.warn("Live catalog unavailable, showing built-in fallback:", err);
+    });
+  }
+
+  /* =====================================================
      REVIEWS — empty on purpose: this is a brand-new shop with no
      customers yet, and we don't fabricate testimonials. Add real
      feedback here as it comes in:
@@ -1967,5 +2002,6 @@
   initTheme();
   renderAll();
   initPlanetBanner();
+  loadLiveCatalog();
 })();
 </script>

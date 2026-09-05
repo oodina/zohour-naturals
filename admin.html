@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Zohour Naturals — Админ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@200;300;400;500;600;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#ffffff; --surface:#ffffff; --surface-2:#eeeeee; --ink:#111111; --ink-soft:#818181; --ink-heading:#0d1717;
+    --line:#eeeeee; --accent:#f15730; --accent-hover:#f7651a; --accent-line:#ff8562;
+    --ok:#3F6C3B; --ok-bg:#3F6C3B14; --err:#8C3B2F; --err-bg:#8C3B2F14;
+    font-family:'Onest',ui-sans-serif,system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{ margin:0; background:var(--bg); color:var(--ink); line-height:1.5; }
+  .wrap{ max-width:880px; margin-inline:auto; padding:32px 20px 80px; }
+  h1{ font-weight:200; font-size:28px; letter-spacing:-0.03em; color:var(--ink-heading); margin:0 0 4px; }
+  .sub{ color:var(--ink-soft); font-size:13px; margin-bottom:28px; }
+  label{ display:block; font-size:12.5px; font-weight:600; margin-bottom:5px; color:var(--ink); }
+  input[type=text], input[type=email], input[type=password], input[type=number], textarea, select{
+    width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:8px; font-family:inherit;
+    font-size:14px; color:var(--ink); background:var(--surface); margin-bottom:14px;
+  }
+  textarea{ min-height:60px; resize:vertical; }
+  .field{ margin-bottom:2px; }
+  .row3{ display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+  @media (max-width:640px){ .row3{ grid-template-columns:1fr; } }
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px; border:none; cursor:pointer;
+    border-radius:999px; padding:11px 22px; font-size:14px; font-weight:500; font-family:inherit;
+  }
+  .btn-primary{ background:var(--accent); color:#fff; }
+  .btn-primary:hover{ background:var(--accent-hover); }
+  .btn-ghost{ background:transparent; color:var(--ink); border:1px solid var(--line); }
+  .btn-ghost:hover{ background:var(--surface-2); }
+  .btn-danger{ background:transparent; color:var(--err); border:1px solid var(--err); }
+  .btn-danger:hover{ background:var(--err-bg); }
+  .btn[disabled]{ opacity:.5; cursor:not-allowed; }
+  .card{ border:1.5px solid var(--accent-line); border-radius:10px; padding:18px; margin-bottom:16px; background:var(--surface); }
+  .card-head{ display:flex; align-items:center; justify-content:space-between; gap:10px; cursor:pointer; }
+  .card-head h3{ font-size:16px; margin:0; font-weight:600; }
+  .card-head .meta{ font-size:12.5px; color:var(--ink-soft); }
+  .card-body{ margin-top:16px; padding-top:16px; border-top:1px solid var(--line); }
+  .card-body[hidden]{ display:none; }
+  .lang-tabs{ display:flex; gap:6px; margin-bottom:12px; }
+  .lang-tab{ padding:6px 14px; border-radius:999px; border:1px solid var(--line); background:var(--surface); cursor:pointer; font-size:12.5px; font-weight:600; color:var(--ink-soft); }
+  .lang-tab.active{ background:var(--accent); color:#fff; border-color:var(--accent); }
+  .lang-pane[hidden]{ display:none; }
+  .inline-row{ display:flex; align-items:center; gap:8px; margin-bottom:14px; }
+  .inline-row label{ margin:0; }
+  .toolbar{ display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; }
+  .status{ font-size:12.5px; margin-top:10px; min-height:16px; }
+  .status.ok{ color:var(--ok); }
+  .status.err{ color:var(--err); }
+  #loginView{ max-width:340px; margin:80px auto; text-align:center; }
+  #loginView h1{ text-align:center; }
+  .badge{ font-size:11px; font-weight:700; padding:3px 9px; border-radius:999px; }
+  .badge.in{ color:var(--ok); background:var(--ok-bg); }
+  .badge.out{ color:var(--err); background:var(--err-bg); }
+  header.top{ display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; }
+  a.back{ font-size:13px; color:var(--ink-soft); text-decoration:none; }
+  [hidden]{ display:none !important; }
+</style>
+</head>
+<body>
+
+<div id="loginView">
+  <div class="wrap" style="padding-top:0;">
+    <h1>Zohour Naturals</h1>
+    <p class="sub">Вход в панель управления</p>
+    <div class="field"><label>Email</label><input type="email" id="loginEmail" autocomplete="username"></div>
+    <div class="field"><label>Пароль</label><input type="password" id="loginPassword" autocomplete="current-password"></div>
+    <button class="btn btn-primary" id="loginBtn" style="width:100%;">Войти</button>
+    <p class="status err" id="loginError"></p>
+  </div>
+</div>
+
+<div id="adminView" hidden>
+  <div class="wrap">
+    <header class="top">
+      <div>
+        <h1>Товары</h1>
+        <p class="sub" style="margin:0;">Zohour Naturals — панель управления</p>
+      </div>
+      <div style="display:flex; gap:10px; align-items:center;">
+        <a class="back" href="index.html" target="_blank">Открыть сайт ↗</a>
+        <button class="btn btn-ghost" id="logoutBtn">Выйти</button>
+      </div>
+    </header>
+
+    <div id="productListStatus" class="status"></div>
+    <div id="productList"></div>
+
+    <button class="btn btn-primary" id="addNewBtn" style="margin-top:10px;">+ Добавить новый товар</button>
+    <div id="newProductSlot"></div>
+  </div>
+</div>
+
+<template id="productFormTemplate">
+  <div class="field row3">
+    <div>
+      <label>ID (латиницей, без пробелов)</label>
+      <input type="text" data-f="id" placeholder="my-product-id">
+    </div>
+    <div>
+      <label>Категория</label>
+      <select data-f="category">
+        <option value="soaps">Мыло</option>
+        <option value="hammam-tools">Инструменты для хаммама</option>
+        <option value="face-hair">Лицо и волосы</option>
+        <option value="fragrance">Парфюмерия</option>
+        <option value="intimate">Интимная гигиена</option>
+        <option value="gifts">Подарочные наборы</option>
+      </select>
+    </div>
+    <div>
+      <label>Бренд (необязательно)</label>
+      <input type="text" data-f="brand" placeholder="—">
+    </div>
+  </div>
+  <div class="field row3">
+    <div>
+      <label>Цена (EGP, 0 = ещё не указана)</label>
+      <input type="number" data-f="price" value="0" min="0" step="0.01">
+    </div>
+    <div>
+      <label>Скидка (%, 0 = нет скидки)</label>
+      <input type="number" data-f="discount" value="0" min="0" max="100">
+    </div>
+    <div>
+      <label>В наличии</label>
+      <select data-f="in_stock">
+        <option value="true">Да</option>
+        <option value="false">Нет</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="lang-tabs">
+    <button type="button" class="lang-tab active" data-lang-tab="en">EN</button>
+    <button type="button" class="lang-tab" data-lang-tab="ar">AR</button>
+    <button type="button" class="lang-tab" data-lang-tab="ru">RU</button>
+  </div>
+  <div class="lang-pane" data-lang-pane="en">
+    <label>Название (EN)</label><input type="text" data-f="name_en">
+    <label>Короткое описание (EN)</label><input type="text" data-f="tagline_en">
+    <label>Полное описание (EN)</label><textarea data-f="desc_en"></textarea>
+    <label>Как использовать (EN)</label><textarea data-f="howto_en"></textarea>
+  </div>
+  <div class="lang-pane" data-lang-pane="ar" hidden>
+    <label>الاسم (AR)</label><input type="text" data-f="name_ar" dir="rtl">
+    <label>وصف قصير (AR)</label><input type="text" data-f="tagline_ar" dir="rtl">
+    <label>الوصف الكامل (AR)</label><textarea data-f="desc_ar" dir="rtl"></textarea>
+    <label>طريقة الاستخدام (AR)</label><textarea data-f="howto_ar" dir="rtl"></textarea>
+  </div>
+  <div class="lang-pane" data-lang-pane="ru" hidden>
+    <label>Название (RU)</label><input type="text" data-f="name_ru">
+    <label>Короткое описание (RU)</label><input type="text" data-f="tagline_ru">
+    <label>Полное описание (RU)</label><textarea data-f="desc_ru"></textarea>
+    <label>Как использовать (RU)</label><textarea data-f="howto_ru"></textarea>
+  </div>
+
+  <div class="field">
+    <label>Подходит для типа кожи (через запятую: dry, oily, combination, sensitive, normal — можно оставить пустым)</label>
+    <input type="text" data-f="skin" placeholder="dry, sensitive">
+  </div>
+
+  <div class="toolbar">
+    <button type="button" class="btn btn-primary" data-action="save">Сохранить</button>
+    <button type="button" class="btn btn-danger" data-action="delete" hidden>Удалить товар</button>
+    <button type="button" class="btn btn-ghost" data-action="cancel" hidden>Отмена</button>
+  </div>
+  <p class="status" data-role="status"></p>
+</template>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+(function(){
+  "use strict";
+
+  // ---- Supabase project config (publishable key — safe to keep in client code) ----
+  var SUPABASE_URL = "https://sdfiyxvdgihuekjljfov.supabase.co";
+  var SUPABASE_KEY = "sb_publishable_LoPzNCj9UTdreTNGpFzYDQ_C8wTZ7ZP";
+  var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  var CATEGORY_LABELS = {
+    "soaps":"Мыло", "hammam-tools":"Инструменты для хаммама", "face-hair":"Лицо и волосы",
+    "fragrance":"Парфюмерия", "intimate":"Интимная гигиена", "gifts":"Подарочные наборы"
+  };
+
+  var loginView = document.getElementById("loginView");
+  var adminView = document.getElementById("adminView");
+  var loginError = document.getElementById("loginError");
+
+  // ---------- Auth ----------
+  document.getElementById("loginBtn").addEventListener("click", function(){
+    var email = document.getElementById("loginEmail").value.trim();
+    var password = document.getElementById("loginPassword").value;
+    loginError.textContent = "";
+    sb.auth.signInWithPassword({ email: email, password: password }).then(function(res){
+      if(res.error){ loginError.textContent = "Не удалось войти: проверьте email и пароль."; return; }
+      showAdmin();
+    });
+  });
+  document.getElementById("logoutBtn").addEventListener("click", function(){
+    sb.auth.signOut().then(function(){ location.reload(); });
+  });
+
+  function showAdmin(){
+    loginView.hidden = true;
+    adminView.hidden = false;
+    loadProducts();
+  }
+
+  sb.auth.getSession().then(function(res){
+    if(res.data && res.data.session){ showAdmin(); }
+  });
+
+  // ---------- Product form (shared by edit + add) ----------
+  var formTpl = document.getElementById("productFormTemplate");
+
+  function buildForm(product, opts){
+    var frag = formTpl.content.cloneNode(true);
+    var root = document.createElement("div");
+    root.appendChild(frag);
+
+    function setVal(f, v){ var el = root.querySelector('[data-f="'+f+'"]'); if(el) el.value = (v===null||v===undefined) ? "" : v; }
+    if(product){
+      setVal("id", product.id);
+      root.querySelector('[data-f="id"]').disabled = true; // id can't change after creation
+      setVal("category", product.category);
+      setVal("brand", product.brand);
+      setVal("price", product.price);
+      setVal("discount", product.discount);
+      setVal("in_stock", product.in_stock ? "true" : "false");
+      ["en","ar","ru"].forEach(function(l){
+        setVal("name_"+l, product["name_"+l]);
+        setVal("tagline_"+l, product["tagline_"+l]);
+        setVal("desc_"+l, product["desc_"+l]);
+        setVal("howto_"+l, product["howto_"+l]);
+      });
+      setVal("skin", (product.skin||[]).join(", "));
+      var delBtn = root.querySelector('[data-action="delete"]');
+      delBtn.hidden = false;
+      delBtn.addEventListener("click", function(){
+        if(!confirm("Удалить товар \"" + product.id + "\" насовсем?")) return;
+        sb.from("products").delete().eq("id", product.id).then(function(res){
+          if(res.error){ setStatus(root, "Ошибка удаления: " + res.error.message, true); return; }
+          loadProducts();
+        });
+      });
+    } else {
+      var cancelBtn = root.querySelector('[data-action="cancel"]');
+      cancelBtn.hidden = false;
+      cancelBtn.addEventListener("click", function(){ root.remove(); });
+    }
+
+    // language tabs
+    root.querySelectorAll("[data-lang-tab]").forEach(function(tab){
+      tab.addEventListener("click", function(){
+        var lang = tab.getAttribute("data-lang-tab");
+        root.querySelectorAll("[data-lang-tab]").forEach(function(t){ t.classList.toggle("active", t===tab); });
+        root.querySelectorAll("[data-lang-pane]").forEach(function(p){ p.hidden = p.getAttribute("data-lang-pane") !== lang; });
+      });
+    });
+
+    root.querySelector('[data-action="save"]').addEventListener("click", function(){
+      saveProduct(root, product);
+    });
+
+    return root;
+  }
+
+  function setStatus(root, msg, isErr){
+    var el = root.querySelector('[data-role="status"]');
+    el.textContent = msg;
+    el.className = "status " + (isErr ? "err" : "ok");
+  }
+
+  function saveProduct(root, existing){
+    function val(f){ var el = root.querySelector('[data-f="'+f+'"]'); return el ? el.value : ""; }
+    var id = val("id").trim();
+    if(!id){ setStatus(root, "Заполните ID товара (латиницей, без пробелов).", true); return; }
+    if(!/^[a-z0-9-]+$/.test(id)){ setStatus(root, "ID может содержать только латинские буквы, цифры и дефисы.", true); return; }
+
+    var row = {
+      id: id,
+      category: val("category"),
+      brand: val("brand").trim() || null,
+      price: parseFloat(val("price")) || 0,
+      discount: parseFloat(val("discount")) || 0,
+      in_stock: val("in_stock") === "true",
+      name_en: val("name_en"), name_ar: val("name_ar"), name_ru: val("name_ru"),
+      tagline_en: val("tagline_en"), tagline_ar: val("tagline_ar"), tagline_ru: val("tagline_ru"),
+      desc_en: val("desc_en"), desc_ar: val("desc_ar"), desc_ru: val("desc_ru"),
+      howto_en: val("howto_en"), howto_ar: val("howto_ar"), howto_ru: val("howto_ru"),
+      skin: val("skin").split(",").map(function(s){ return s.trim(); }).filter(Boolean),
+      icon: (existing && existing.icon) || "i-jar",
+      accent: (existing && existing.accent) || "gold"
+    };
+    if(!row.name_en || !row.name_ar || !row.name_ru){
+      setStatus(root, "Название нужно заполнить хотя бы для всех трёх языков.", true);
+      return;
+    }
+
+    setStatus(root, "Сохраняю…", false);
+    sb.from("products").upsert(row).then(function(res){
+      if(res.error){ setStatus(root, "Ошибка: " + res.error.message, true); return; }
+      setStatus(root, "Сохранено ✓", false);
+      loadProducts();
+    });
+  }
+
+  // ---------- List ----------
+  document.getElementById("addNewBtn").addEventListener("click", function(){
+    var slot = document.getElementById("newProductSlot");
+    slot.innerHTML = "";
+    var card = document.createElement("div");
+    card.className = "card";
+    var head = document.createElement("h3");
+    head.textContent = "Новый товар";
+    head.style.marginBottom = "14px";
+    card.appendChild(head);
+    card.appendChild(buildForm(null));
+    slot.appendChild(card);
+  });
+
+  function loadProducts(){
+    var statusEl = document.getElementById("productListStatus");
+    var listEl = document.getElementById("productList");
+    statusEl.textContent = "Загрузка…";
+    statusEl.className = "status";
+    sb.from("products").select("*").order("sort_order", { ascending: true }).then(function(res){
+      if(res.error){
+        statusEl.textContent = "Не удалось загрузить товары: " + res.error.message;
+        statusEl.className = "status err";
+        return;
+      }
+      statusEl.textContent = "";
+      listEl.innerHTML = "";
+      (res.data || []).forEach(function(p){
+        var card = document.createElement("div");
+        card.className = "card";
+        var head = document.createElement("div");
+        head.className = "card-head";
+        head.innerHTML =
+          '<div><h3>' + escapeHtml(p.name_ru || p.name_en || p.id) + '</h3>' +
+          '<span class="meta">' + escapeHtml(CATEGORY_LABELS[p.category] || p.category) + ' · ' +
+          (p.price > 0 ? (p.price + ' EGP') : 'цена не указана') + '</span></div>' +
+          '<span class="badge ' + (p.in_stock ? 'in' : 'out') + '">' + (p.in_stock ? 'В наличии' : 'Нет в наличии') + '</span>';
+        var body = document.createElement("div");
+        body.className = "card-body";
+        body.hidden = true;
+        body.appendChild(buildForm(p));
+        head.addEventListener("click", function(){ body.hidden = !body.hidden; });
+        card.appendChild(head);
+        card.appendChild(body);
+        listEl.appendChild(card);
+      });
+    });
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, function(c){
+      return { "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c];
+    });
+  }
+})();
+</script>
+</body>
+</html>

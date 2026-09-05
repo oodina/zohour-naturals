@@ -1042,7 +1042,7 @@
           tagline:{ en:r.tagline_en, ar:r.tagline_ar, ru:r.tagline_ru },
           desc:{ en:r.desc_en, ar:r.desc_ar, ru:r.desc_ru },
           howTo:{ en:r.howto_en, ar:r.howto_ar, ru:r.howto_ru },
-          skin:r.skin || []
+          skin:r.skin || [], photoUrl:r.photo_url || null
         };
       });
       PRODUCTS.length = 0;
@@ -1076,6 +1076,9 @@
   var PHOTO_POSITION = { "parfum":"18% center", "moroccan-soap":"68% center" };
 
   function photoSlotHtml(p){
+    // products added later via the admin panel carry their own uploaded
+    // photo URL straight from Supabase Storage — no local bank needed
+    if(p.photoUrl) return '<img src="'+p.photoUrl+'" loading="lazy" alt="">';
     var key = PHOTO_KEY[p.id];
     if(!key) return null;
     var pos = PHOTO_POSITION[p.id];

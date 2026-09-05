@@ -63,6 +63,9 @@
   .badge.out{ color:var(--err); background:var(--err-bg); }
   header.top{ display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; }
   a.back{ font-size:13px; color:var(--ink-soft); text-decoration:none; }
+  .photo-row{ display:flex; align-items:center; gap:14px; margin-bottom:14px; }
+  .photo-preview{ width:76px; height:76px; border-radius:10px; object-fit:cover; border:1px solid var(--line); flex:0 0 auto; background:var(--surface-2); }
+  input[type=file]{ font-size:13px; }
   [hidden]{ display:none !important; }
 </style>
 </head>
@@ -137,6 +140,17 @@
         <option value="true">Да</option>
         <option value="false">Нет</option>
       </select>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Фото товара</label>
+    <div class="photo-row">
+      <img class="photo-preview" data-role="photoPreview" hidden alt="">
+      <div style="flex:1;">
+        <input type="file" accept="image/*" data-role="photoFile">
+        <p class="status" data-role="photoStatus"></p>
+      </div>
     </div>
   </div>
 
@@ -229,6 +243,29 @@
     root.appendChild(frag);
 
     function setVal(f, v){ var el = root.querySelector('[data-f="'+f+'"]'); if(el) el.value = (v===null||v===undefined) ? "" : v; }
+
+    // ---- photo upload ----
+    root.dataset.photoUrl = (product && product.photo_url) || "";
+    var photoPreview = root.querySelector('[data-role="photoPreview"]');
+    var photoStatus = root.querySelector('[data-role="photoStatus"]');
+    if(root.dataset.photoUrl){ photoPreview.src = root.dataset.photoUrl; photoPreview.hidden = false; }
+    root.querySelector('[data-role="photoFile"]').addEventListener("change", function(e){
+      var file = e.target.files[0];
+      if(!file) return;
+      photoStatus.textContent = "Загружаю фото…";
+      photoStatus.className = "status";
+      var path = Date.now() + "-" + file.name.replace(/[^a-zA-Z0-9.]/g, "_");
+      sb.storage.from("product-photos").upload(path, file, { upsert: true, contentType: file.type }).then(function(res){
+        if(res.error){ photoStatus.textContent = "Ошибка загрузки: " + res.error.message; photoStatus.className = "status err"; return; }
+        var publicUrl = sb.storage.from("product-photos").getPublicUrl(path).data.publicUrl;
+        root.dataset.photoUrl = publicUrl;
+        photoPreview.src = publicUrl;
+        photoPreview.hidden = false;
+        photoStatus.textContent = "Фото загружено ✓ — не забудь нажать «Сохранить»";
+        photoStatus.className = "status ok";
+      });
+    });
+
     if(product){
       setVal("id", product.id);
       root.querySelector('[data-f="id"]').disabled = true; // id can't change after creation
@@ -300,7 +337,8 @@
       howto_en: val("howto_en"), howto_ar: val("howto_ar"), howto_ru: val("howto_ru"),
       skin: val("skin").split(",").map(function(s){ return s.trim(); }).filter(Boolean),
       icon: (existing && existing.icon) || "i-jar",
-      accent: (existing && existing.accent) || "gold"
+      accent: (existing && existing.accent) || "gold",
+      photo_url: root.dataset.photoUrl || null
     };
     if(!row.name_en || !row.name_ar || !row.name_ru){
       setStatus(root, "Название нужно заполнить хотя бы для всех трёх языков.", true);
@@ -347,8 +385,10 @@
         card.className = "card";
         var head = document.createElement("div");
         head.className = "card-head";
+        head.style.gap = "12px";
         head.innerHTML =
-          '<div><h3>' + escapeHtml(p.name_ru || p.name_en || p.id) + '</h3>' +
+          (p.photo_url ? '<img src="'+escapeHtml(p.photo_url)+'" class="photo-preview" style="width:44px;height:44px;">' : '') +
+          '<div style="flex:1;"><h3>' + escapeHtml(p.name_ru || p.name_en || p.id) + '</h3>' +
           '<span class="meta">' + escapeHtml(CATEGORY_LABELS[p.category] || p.category) + ' · ' +
           (p.price > 0 ? (p.price + ' EGP') : 'цена не указана') + '</span></div>' +
           '<span class="badge ' + (p.in_stock ? 'in' : 'out') + '">' + (p.in_stock ? 'В наличии' : 'Нет в наличии') + '</span>';
